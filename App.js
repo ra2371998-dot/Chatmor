@@ -1,0 +1,20 @@
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, View, Text, ScrollView, Pressable, StatusBar } from 'react-native';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from './firebaseConfig';
+const defaults={appName:'Chatmor',primaryColor:'#6414D8',accentColor:'#FFC83D',bannerText:'Welcome to Chatmor Voice Room',seatStyle:'gold-mic',profileFrame:'golden',roomBackground:'royal-purple'};
+function Pill({children}){return <View style={{backgroundColor:'#34204B',padding:10,borderRadius:18,margin:4}}><Text style={{color:'white',fontWeight:'700'}}>{children}</Text></View>}
+export default function App(){
+ const [cfg,setCfg]=useState(defaults); const [tab,setTab]=useState('Home');
+ useEffect(()=>onSnapshot(doc(db,'appConfig','design'),s=>{if(s.exists())setCfg({...defaults,...s.data()})},()=>{}),[]);
+ const bg=cfg.primaryColor||defaults.primaryColor;
+ return <SafeAreaView style={{flex:1,backgroundColor:'#10091D'}}><StatusBar barStyle="light-content"/><ScrollView contentContainerStyle={{padding:16}}>
+ <Text style={{fontSize:28,fontWeight:'900',color:cfg.accentColor}}>{cfg.appName}</Text><Text style={{color:'white'}}>Voice • Friends • Gifts</Text>
+ <View style={{backgroundColor:bg,borderColor:cfg.accentColor,borderWidth:2,borderRadius:20,padding:20,marginTop:18}}><Text style={{fontSize:22,color:'white',fontWeight:'900'}}>{cfg.bannerText}</Text><Text style={{color:'#FDE9A5',marginTop:8}}>Talk • Make Friends • Enjoy Together</Text></View>
+ <Text style={{color:'white',fontSize:20,fontWeight:'800',marginTop:24}}>Popular Rooms</Text><View style={{flexDirection:'row',flexWrap:'wrap'}}>{['Bangladesh','Popular','Friends'].map(x=><Pill key={x}>{x}</Pill>)}</View>
+ <View style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-between'}}>{['BD Official Room','Music Friends','Fun Time','Good Vibes'].map((x,i)=><Pressable key={x} onPress={()=>setTab('Room')} style={{width:'48%',backgroundColor:'#211332',borderColor:cfg.accentColor,borderWidth:1,borderRadius:18,padding:14,marginTop:12}}><Text style={{color:cfg.accentColor,fontWeight:'900'}}>ROOM {i+1}</Text><Text style={{color:'white',fontSize:16,fontWeight:'800',marginTop:8}}>{x}</Text><Text style={{color:'#D8C9E8',marginTop:5}}>👥 {8+i} online</Text></Pressable>)}</View>
+ <Text style={{color:'white',fontSize:20,fontWeight:'800',marginTop:24}}>Room Preview</Text><View style={{backgroundColor:'#1A1028',borderRadius:20,padding:14,marginTop:8,borderColor:bg,borderWidth:2}}><Text style={{color:cfg.accentColor,fontWeight:'900',fontSize:18}}>Chatmor Official • ID: 888</Text><View style={{flexDirection:'row',flexWrap:'wrap',justifyContent:'space-around'}}>{Array.from({length:8},(_,i)=><View key={i} style={{alignItems:'center',margin:10}}><View style={{width:62,height:62,borderRadius:40,backgroundColor:bg,borderWidth:3,borderColor:cfg.accentColor,alignItems:'center',justifyContent:'center'}}><Text style={{fontSize:27}}>🎙️</Text></View><Text style={{color:'white'}}>{i+1}</Text></View>)}</View><Text style={{color:'#E9DDF7',textAlign:'center'}}>লাইভ অডিও পরের ধাপে SDK দিয়ে যুক্ত হবে</Text></View>
+ <Text style={{color:'white',fontSize:20,fontWeight:'800',marginTop:24}}>Profile Preview</Text><View style={{backgroundColor:'#211332',padding:16,borderRadius:18,borderWidth:2,borderColor:cfg.accentColor,marginTop:8}}><Text style={{color:'white',fontSize:20,fontWeight:'900'}}>👑 MR Rahman</Text><Text style={{color:'#EADCFB',marginTop:6}}>ID: 515950 • LV 08 • VIP 2</Text><View style={{flexDirection:'row',flexWrap:'wrap',marginTop:8}}><Pill>💎 Coins</Pill><Pill>🎁 Gifts</Pill><Pill>🏅 Badges</Pill></View></View>
+ <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:24,backgroundColor:'#211332',padding:12,borderRadius:20}}>{['Home','Room','Game','Message','Profile'].map(x=><Pressable key={x} onPress={()=>setTab(x)}><Text style={{color:tab===x?cfg.accentColor:'white',fontWeight:'800'}}>{x}</Text></Pressable>)}</View>
+ <Text style={{color:'#A99AB8',fontSize:12,marginTop:18}}>Starter UI only • Secure backend required before public launch</Text></ScrollView></SafeAreaView>;
+}
